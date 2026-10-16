@@ -1,0 +1,6 @@
+{
+    "enabled": true,
+    "operator": "solcv",
+    "min_version": "1.0.12",
+    "playlist_url": "http://190.211.140.90/ottsolcv.m3u"
+}
