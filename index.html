@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SANMAR LICENSES</title>
+
+    <style>
+        /* Configuración general */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f4f6f9;
+            color: #2c3e50;
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Título */
+        h1 {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #1f3a5f;
+            margin-bottom: 35px;
+        }
+
+        /* Contenedor de la tabla */
+        .table-container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow-x: auto;
+        }
+
+        /* Tabla */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        /* Encabezados */
+        thead {
+            background-color: #1f3a5f;
+            color: #ffffff;
+        }
+
+        th {
+            padding: 16px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Celdas */
+        td {
+            padding: 18px 20px;
+            font-size: 16px;
+            border-bottom: 1px solid #e8edf2;
+        }
+
+        /* Efecto al pasar el mouse */
+        tbody tr:hover {
+            background-color: #f5f8fc;
+        }
+
+        /* Quitar borde inferior de la última fila */
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Nombre de la empresa */
+        .empresa {
+            font-weight: 600;
+            color: #263b53;
+        }
+
+        /* Estado activo */
+        .estado {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background-color: #e3f7e9;
+            color: #218344;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Adaptación para celulares */
+        @media (max-width: 600px) {
+            body {
+                padding: 25px 12px;
+            }
+
+            h1 {
+                font-size: 27px;
+                letter-spacing: 1px;
+            }
+
+            .table-container {
+                padding: 12px;
+            }
+
+            th, td {
+                padding: 14px 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>SANMAR LICENSES</h1>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Empresa</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td class="empresa">SOLCV</td>
+                        <td>
+                            <span class="estado">True</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</body>
+</html>
