@@ -175,41 +175,73 @@
 
     </div>
 
-    <script>
-        async function cargarLicencias() {
-            const tabla = document.getElementById("empresas");
-            const mensaje = document.getElementById("mensaje");
-            const actualizacion = document.getElementById("actualizacion");
+    
+<script>
+    async function cargarLicencias() {
+        const tabla = document.getElementById("empresas");
+        const mensaje = document.getElementById("mensaje");
+        const actualizacion = document.getElementById("actualizacion");
 
-            try {
-                // Evita reutilizar una copia guardada en el navegador.
-                const url = "./solcv.json?v=" + Date.now();
+        try {
+            const indiceUrl = "./licenses.json?v=" + Date.now();
 
-                const respuesta = await fetch(url, {
-                    cache: "no-store"
-                });
+            const respuestaIndice = await fetch(indiceUrl, {
+                cache: "no-store"
+            });
 
-                if (!respuesta.ok) {
-                    throw new Error("No se encontró solcv.json");
-                }
+            if (!respuestaIndice.ok) {
+                throw new Error("No se pudo cargar licenses.json");
+            }
 
-                const licencia = await respuesta.json();
+            const archivos = await respuestaIndice.json();
 
-                if (
-                    typeof licencia.operator !== "string" ||
-                    typeof licencia.enabled !== "boolean"
-                ) {
-                    throw new Error("El JSON no tiene los campos requeridos");
-                }
+            if (!Array.isArray(archivos)) {
+                throw new Error("El índice de licencias no es válido");
+            }
 
+            const licencias = await Promise.all(
+                archivos.map(async archivo => {
+                    // Solo aceptar nombres de archivos JSON sencillos.
+                    if (
+                        typeof archivo !== "string" ||
+                        !/^[a-zA-Z0-9_-]+\.json$/.test(archivo) ||
+                        archivo === "licenses.json"
+                    ) {
+                        throw new Error("Nombre de archivo no válido");
+                    }
+
+                    const respuesta = await fetch(
+                        "./" + archivo + "?v=" + Date.now(),
+                        { cache: "no-store" }
+                    );
+
+                    if (!respuesta.ok) {
+                        throw new Error("Error al cargar " + archivo);
+                    }
+
+                    const licencia = await respuesta.json();
+
+                    if (
+                        typeof licencia.operator !== "string" ||
+                        typeof licencia.enabled !== "boolean"
+                    ) {
+                        throw new Error("JSON no válido: " + archivo);
+                    }
+
+                    return licencia;
+                })
+            );
+
+            tabla.replaceChildren();
+
+            licencias.forEach(licencia => {
                 const fila = document.createElement("tr");
-
                 const empresa = document.createElement("td");
-                empresa.className = "empresa";
-                empresa.textContent = licencia.operator.toUpperCase();
-
                 const celdaEstado = document.createElement("td");
                 const etiqueta = document.createElement("span");
+
+                empresa.className = "empresa";
+                empresa.textContent = licencia.operator.toUpperCase();
 
                 etiqueta.className = licencia.enabled
                     ? "estado activo"
@@ -218,26 +250,25 @@
                 etiqueta.textContent = String(licencia.enabled);
 
                 celdaEstado.appendChild(etiqueta);
-                fila.appendChild(empresa);
-                fila.appendChild(celdaEstado);
+                fila.append(empresa, celdaEstado);
+                tabla.appendChild(fila);
+            });
 
-                tabla.replaceChildren(fila);
-                mensaje.hidden = true;
+            mensaje.hidden = true;
+            actualizacion.textContent =
+                "Información consultada: " +
+                new Date().toLocaleString("es-CO");
 
-                actualizacion.textContent =
-                    "Información consultada: " +
-                    new Date().toLocaleString("es-CO");
-
-            } catch (error) {
-                tabla.replaceChildren();
-                mensaje.hidden = false;
-                actualizacion.textContent = "";
-
-                console.error("Error cargando licencia:", error);
-            }
+        } catch (error) {
+            tabla.replaceChildren();
+            mensaje.hidden = false;
+            actualizacion.textContent = "";
+            console.error("Error cargando licencias:", error);
         }
+    }
 
-        cargarLicencias();
-    </script>
+    cargarLicencias();
+</script>
+
 </body>
 </html>
