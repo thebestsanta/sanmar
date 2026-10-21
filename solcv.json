@@ -1,5 +1,5 @@
 {
-    "enabled": true,
+    "enabled": false,
     "operator": "SOLCV",
     "min_version": "1.0.12"
 }
