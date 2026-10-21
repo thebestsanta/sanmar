@@ -8,7 +8,6 @@
     <title>SANMAR LICENSES</title>
 
     <style>
-        /* Configuración general */
         * {
             box-sizing: border-box;
         }
@@ -17,91 +16,107 @@
             margin: 0;
             padding: 40px 20px;
             font-family: Arial, Helvetica, sans-serif;
-            background-color: #f4f6f9;
+            background: #f4f6f9;
             color: #2c3e50;
         }
 
-        /* Contenedor principal */
         .container {
             max-width: 900px;
             margin: 0 auto;
         }
 
-        /* Título */
         h1 {
             text-align: center;
             font-size: 36px;
             font-weight: 700;
             letter-spacing: 2px;
             color: #1f3a5f;
-            margin-bottom: 35px;
+            margin: 0 0 35px;
         }
 
-        /* Contenedor de la tabla */
         .table-container {
-            background-color: #ffffff;
+            background: #ffffff;
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             overflow-x: auto;
         }
 
-        /* Tabla */
         table {
             width: 100%;
             border-collapse: collapse;
             text-align: left;
         }
 
-        /* Encabezados */
         thead {
-            background-color: #1f3a5f;
+            background: #1f3a5f;
             color: #ffffff;
         }
 
         th {
             padding: 16px 20px;
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 14px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        /* Celdas */
         td {
             padding: 18px 20px;
             font-size: 16px;
             border-bottom: 1px solid #e8edf2;
         }
 
-        /* Efecto al pasar el mouse */
         tbody tr:hover {
-            background-color: #f5f8fc;
+            background: #f5f8fc;
         }
 
-        /* Quitar borde inferior de la última fila */
         tbody tr:last-child td {
             border-bottom: none;
         }
 
-        /* Nombre de la empresa */
         .empresa {
             font-weight: 600;
             color: #263b53;
         }
 
-        /* Estado activo */
         .estado {
             display: inline-block;
             padding: 6px 14px;
             border-radius: 20px;
-            background-color: #e3f7e9;
-            color: #218344;
             font-size: 14px;
             font-weight: 600;
         }
 
-        /* Adaptación para celulares */
+        .activo {
+            background: #e3f7e9;
+            color: #218344;
+        }
+
+        .inactivo {
+            background: #fde8e8;
+            color: #b42318;
+        }
+
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #b42318;
+        }
+
+        .actualizacion {
+            margin-top: 18px;
+            color: #8793a3;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            color: #8793a3;
+            font-size: 13px;
+            margin-top: 25px;
+        }
+
         @media (max-width: 600px) {
             body {
                 padding: 25px 12px;
@@ -124,7 +139,6 @@
 </head>
 
 <body>
-
     <div class="container">
 
         <h1>SANMAR LICENSES</h1>
@@ -138,18 +152,92 @@
                     </tr>
                 </thead>
 
-                <tbody>
+                <tbody id="empresas">
                     <tr>
-                        <td class="empresa">SOLCV</td>
-                        <td>
-                            <span class="estado">True</span>
+                        <td colspan="2" style="text-align:center">
+                            Cargando licencias...
                         </td>
                     </tr>
                 </tbody>
             </table>
+
+            <div id="mensaje" class="error" hidden>
+                No fue posible cargar la información de las licencias.
+                Verifica que los archivos JSON existan y sean válidos.
+            </div>
+
+            <div id="actualizacion" class="actualizacion"></div>
         </div>
+
+        <footer>
+            &copy; 2026 SANMAR LICENSES
+        </footer>
 
     </div>
 
+    <script>
+        async function cargarLicencias() {
+            const tabla = document.getElementById("empresas");
+            const mensaje = document.getElementById("mensaje");
+            const actualizacion = document.getElementById("actualizacion");
+
+            try {
+                // Evita reutilizar una copia guardada en el navegador.
+                const url = "./solcv.json?v=" + Date.now();
+
+                const respuesta = await fetch(url, {
+                    cache: "no-store"
+                });
+
+                if (!respuesta.ok) {
+                    throw new Error("No se encontró solcv.json");
+                }
+
+                const licencia = await respuesta.json();
+
+                if (
+                    typeof licencia.operator !== "string" ||
+                    typeof licencia.enabled !== "boolean"
+                ) {
+                    throw new Error("El JSON no tiene los campos requeridos");
+                }
+
+                const fila = document.createElement("tr");
+
+                const empresa = document.createElement("td");
+                empresa.className = "empresa";
+                empresa.textContent = licencia.operator.toUpperCase();
+
+                const celdaEstado = document.createElement("td");
+                const etiqueta = document.createElement("span");
+
+                etiqueta.className = licencia.enabled
+                    ? "estado activo"
+                    : "estado inactivo";
+
+                etiqueta.textContent = String(licencia.enabled);
+
+                celdaEstado.appendChild(etiqueta);
+                fila.appendChild(empresa);
+                fila.appendChild(celdaEstado);
+
+                tabla.replaceChildren(fila);
+                mensaje.hidden = true;
+
+                actualizacion.textContent =
+                    "Información consultada: " +
+                    new Date().toLocaleString("es-CO");
+
+            } catch (error) {
+                tabla.replaceChildren();
+                mensaje.hidden = false;
+                actualizacion.textContent = "";
+
+                console.error("Error cargando licencia:", error);
+            }
+        }
+
+        cargarLicencias();
+    </script>
 </body>
 </html>
